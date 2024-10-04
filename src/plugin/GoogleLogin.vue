@@ -3,7 +3,14 @@ import { onMounted, ref, useSlots } from 'vue';
 import * as types from './types';
 import * as utils from './utils';
 import { CredentialCallback } from './callbackTypes';
-import state, { libraryState } from './state';
+import state from './state';
+import config from './config';
+
+// To show errow if tried to rendered on server side
+const isRunningInBrowser = typeof window !== 'undefined';
+if (!isRunningInBrowser) {
+  throw new Error(config.ssrError);
+}
 
 const slots = useSlots();
 const hasSlot: boolean = slots.default ? true : false;

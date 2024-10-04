@@ -6,14 +6,14 @@
 </p>
 
 <p align="center">
-  <a href="https://npm-stat.com/charts.html?package=vue3-google-login" target="_blank">
-    <img src="https://img.shields.io/npm/dm/vue3-google-login.svg" alt="npm"/>
+  <a href="https://npmcharts.com/compare/vue3-google-login" target="_blank">
+    <img src="https://img.shields.io/npm/dw/vue3-google-login.svg" alt="downloads"/>
   </a>&nbsp;
   <a href="https://www.npmjs.com/package/vue3-google-login" target="_blank">
     <img src="https://img.shields.io/npm/v/vue3-google-login.svg" alt="npm"/>
   </a>&nbsp;
   <a href="https://bundlephobia.com/package/vue3-google-login" target="_blank">
-    <img src="https://img.shields.io/bundlephobia/minzip/vue3-google-login/^2.0.0" alt="npm"/>
+    <img src="https://img.shields.io/bundlephobia/minzip/vue3-google-login" alt="bundlephobia"/>
   </a>&nbsp;
 </p>
 
@@ -42,15 +42,22 @@ This allows you to implement the following features
 
 ### Installation
 
-First step is to install it using npm
+Installation via NPM
 
-```bash
+```sh
 npm install vue3-google-login
 ```
-Or using yarn
-```bash
+Installation via Yarn
+```sh
 yarn add vue3-google-login
 ```
+Installation via CDN
+
+If you prefer to use vue3-google-login via a CDN, you can include the following script in your HTML file:
+```html
+<script src="https://cdn.jsdelivr.net/npm/vue3-google-login@2.0.31/dist/index.umd.min.js"></script>
+```
+
 ### Initialize the plugin
 
 Initialize the vue3-google-login plugin in main.js, this will register a component `GoogleLogin` globally
@@ -70,7 +77,7 @@ app.use(vue3GoogleLogin, {
 app.mount('#app')
 ```
 
-> :bulb: If you dont want to initialize and register `GoogleLogin` component, you can directly import this from `vue3-google-login` package and use the client-id prop, also some functions accepts a clientId option which can be used to avoid initialising the plugin, see [here](#options) for more info
+> :bulb: If you dont want to initialize and register `GoogleLogin` component, you can directly import this from `vue3-google-login` package and use the client-id prop, also some functions accepts a clientId option which can be used to avoid initializing the plugin, see [here](#options) for more info
 > 
 ### GoogleLogin component
 
@@ -152,14 +159,16 @@ Here is an image showing One Tap prompt
   >
 </p>
 
-> :exclamation: While using One-tap feature, a [dead-loop UX issue](https://developers.google.com/identity/gsi/web/guides/automatic-sign-in-sign-out#sign-out) may occur. To resolve this issue, in your logout function run `googleLogout` funtion
-> ```javascript
-> import { googleLogout } from "vue3-google-login"
-> const yourLogoutFunction() {
->   // your logout logics
->   googleLogout()
-> }
-> ```
+### Use of googleLogout function
+While using One-tap feature, a [dead-loop UX issue](https://developers.google.com/identity/gsi/web/guides/automatic-sign-in-sign-out#sign-out) may occur. To resolve this issue, in your logout function run `googleLogout` funtion
+```javascript
+import { googleLogout } from "vue3-google-login"
+const yourLogoutFunction = () => {
+  // your logout logics
+  googleLogout()
+}
+```
+> :exclamation: Function `googleLogout` is used to temporarily disable One Tap Automatic sign-in for one day. This API does not sign out your users out of your website or any Google websites.
 
 ### Automatic Login
 To enable this feature, set the prop `autoLogin` to true, this will automatically detects whether only one Google account is logged in, if yes then prompt will automatically log in and will trigger the callback without any user interactions, to make this work `prompt` must be set to true
@@ -511,10 +520,62 @@ const callback = (response) => {
 </template>
 ```
 
+## Nuxt 3
+
+### Initialize vue3-google-login inside the plugins directory
+For example, create a file named vue3-google-login.client.ts and place it inside the plugins directory, this will register `GoogleLogin` component globally
+>  :exclamation: Make sure to use `.client` suffix in the file name to load the plugin only on the client side.
+```js
+// plugins/vue3-google-login.client.ts
+import vue3GoogleLogin from 'vue3-google-login'
+
+export default defineNuxtPlugin((nuxtApp) => {
+  nuxtApp.vueApp.use(vue3GoogleLogin, {
+    clientId: 'YOUR_GOOGLE_CLIENT_ID'
+  })
+});
+```
+
+## No SSR support
+The [GoogleLogin component](#googlelogin-component) doesn't render properly on the server side because the Google login button relies on an iframe button provided by Google and needs the [Google 3P Authorization JavaScript Library](https://developers.google.com/identity/oauth2/web/guides/load-3p-authorization-library) to be loaded on the client side. So, if you are using SSR-supporting frameworks like Nuxt 3 or Quasar, make sure the GoogleLogin component is rendered on the client side. 
+
+> :bulb: You can also directly import the [GoogleLogin component](#googlelogin-component) and utilize the client-id prop if you don't wish to initialize the plugin at the framework entry point and register the GoogleLogin component globally.
+
+### Nuxt 3
+On Nuxt 3 application, wrap the GoogleLogin component in the [`ClientOnly` component](https://nuxt.com/docs/api/components/client-only), which is used for purposely rendering a component only on client side.
+
+```vue
+  <ClientOnly>
+    <GoogleLogin :callback="callback" client-id="YOUR_GOOGLE_CLIENT_ID"/>
+  </ClientOnly>
+```
+
+### Quasar in SSR mode
+You can use [`QNoSsr` component](https://quasar.dev/vue-components/no-ssr/) for rendering the login button on client side while running a Quasar app on SSR mode.
+```vue
+  <q-no-ssr>
+    <GoogleLogin :callback="callback" client-id="YOUR_GOOGLE_CLIENT_ID"/>
+  </q-no-ssr>
+```
+
+### Vike
+In Vike applications, you can use the [clientOnly helper](https://vike.dev/clientOnly#vue), which is used for purposely rendering a component only on client side. 
+
+```vue
+<template>
+  <GoogleLogin :callback="callback" client-id="YOUR_GOOGLE_CLIENT_ID"/>
+</template>
+
+<script setup lang="ts">
+import { clientOnly } from 'vike-vue/clientOnly'
+const GoogleLogin = clientOnly(async () => (await import('vue3-google-login')).GoogleLogin);
+</script>
+```
+
 ## Options
 
 ### Plugin options and GoogleLogin component props
-Options of plugin used at [initializing in main.js](#initialize-the-plugin) and prop values in [GoogleLogin component](#googlelogin-component) are similar
+Options of plugin used at [initializing in main.js](#initialize-the-plugin) and prop values in [GoogleLogin component](#googlelogin-component) are similar.
 
 | Name            |   Type   | Description                                                                                                                                                                                                                                                                                                                                         |
 | --------------- | :------: | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -537,7 +598,6 @@ Options of plugin used at [initializing in main.js](#initialize-the-plugin) and 
 | context            |  String  | The title and words in the One Tap prompt, this can be `signin`&#124;`signup`&#124;`use` see [here](https://developers.google.com/identity/gsi/web/guides/change-sign-in-context) for more info                                                                                                              |
 | autoLogin          | Boolean  | Set this to true if you want the one-tap promt to automatically login                                                                                                                                                                                                                                        |
 | cancelOnTapOutside | Boolean  | Controls whether to cancel the prompt if the user clicks outside of the prompt                                                                                                                                                                                                                               |
-| onNotification     | Function | The One Tap prompt might not be displayed is some cases. To get notified on the UI status for different moments, pass a function to onNotification to recive a notification object, see [here](https://developers.google.com/identity/gsi/web/reference/js-reference#PromptMomentNotification) for more info |
 
 ### Function googleAuthCodeLogin and googleTokenLogin
 `googleAuthCodeLogin` and `googleTokenLogin` functions accepts an object with client id, this is useful if you are not planning to initialize the plugin in main.js

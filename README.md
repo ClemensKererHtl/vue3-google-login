@@ -7,14 +7,14 @@
 </p>
 
 <p align="center">
-  <a href="https://npm-stat.com/charts.html?package=vue3-google-login" target="_blank">
-    <img src="https://img.shields.io/npm/dm/vue3-google-login.svg" alt="npm"/>
+  <a href="https://npmcharts.com/compare/vue3-google-login" target="_blank">
+    <img src="https://img.shields.io/npm/dw/vue3-google-login.svg" alt="downloads"/>
   </a>&nbsp;
   <a href="https://www.npmjs.com/package/vue3-google-login" target="_blank">
     <img src="https://img.shields.io/npm/v/vue3-google-login.svg" alt="npm"/>
   </a>&nbsp;
   <a href="https://bundlephobia.com/package/vue3-google-login" target="_blank">
-    <img src="https://img.shields.io/bundlephobia/minzip/vue3-google-login/^2.0.0" alt="npm"/>
+    <img src="https://img.shields.io/bundlephobia/minzip/vue3-google-login" alt="bundlephobia"/>
   </a>&nbsp;
 </p>
 
@@ -45,15 +45,22 @@ https://devbaji.github.io/vue3-google-login/
 
 ### Installation
 
-First step is to install it using npm
+Installation via NPM
 
-```bash
+```sh
 npm install vue3-google-login
 ```
-Or using yarn
-```bash
+Installation via Yarn
+```sh
 yarn add vue3-google-login
 ```
+Installation via CDN
+
+If you prefer to use vue3-google-login via a CDN, you can include the following script in your HTML file:
+```html
+<script src="https://cdn.jsdelivr.net/npm/vue3-google-login@2.0.31/dist/index.umd.min.js"></script>
+```
+
 ### Initialize the plugin
 
 Initialize the vue3-google-login plugin in main.js, this will register a component `GoogleLogin` globally
